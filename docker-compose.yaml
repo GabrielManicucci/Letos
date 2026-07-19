@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: letos-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: letos_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - letos_network
+  api:
+    build:
+      context: .
+      dockerfile: .dockerfile
+    container_name: letos-api
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres_user:postgres_password@db:5432/letos_db?schema=public
+    networks:
+      - letos_network
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+networks:
+  letos_network:
+    driver: bridge
+
+volumes:
+  pgdata:
