@@ -2,7 +2,7 @@ import { Hono } from "hono";
 
 const app = new Hono();
 
-const helloWorld = process.env.helloWorld;
+const helloWorld = Bun.env.helloWorld;
 
 app.get("/", (c) => {
   return c.text(`${helloWorld}`);
