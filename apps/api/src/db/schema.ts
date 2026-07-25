@@ -1,34 +1,41 @@
-import { boolean, integer, text, timestamp, uuid, varchar, snakeCase } from "drizzle-orm/pg-core";
+import { boolean, integer, text, timestamp, uuid, varchar, snakeCase, primaryKey } from "drizzle-orm/pg-core";
 
-export const usersTable =  snakeCase.table(("users"), {
+export const RolesTable = snakeCase.table("roles", {
+  roleId: uuid().primaryKey(),
+  name: varchar({ length: 255 }).notNull(),
+});
+
+export const usersTable = snakeCase.table("users", {
   userId: uuid().primaryKey(),
   name: varchar({ length: 255 }).notNull(),
   age: integer().notNull(),
   pro: boolean(),
   email: varchar({ length: 255 }).notNull().unique(),
+  role: uuid().references(() => RolesTable.roleId),
 });
-
-export const userTeam = snakeCase.table("user_team", {
-  userId: varchar().references(() => usersTable.userId),
-  teamId: varchar().references(() => teamTable.teamId),
-  createdAt: timestamp().defaultNow()
-})
 
 export const teamTable = snakeCase.table("team", {
   teamId: uuid().primaryKey(),
   name: varchar({ length: 55 }).notNull(),
-  createdAt: timestamp().defaultNow()
-})
+  createdAt: timestamp().defaultNow(),
+});
 
-export const usersSavedRoadmapTable = snakeCase.table("users_saved_roadmap", {
-  userId: varchar().references(() => usersTable.userId),
-  roadmapId: varchar().references(() => roadmapTable.roadmapId),
-})
+export const userTeam = snakeCase.table("user_team", {
+  userId: uuid().references(() => usersTable.userId),
+  teamId: uuid().references(() => teamTable.teamId),
+  createdAt: timestamp().defaultNow(),
+
+},(t) => [primaryKey({ columns: [t.userId, t.teamId] })]);
 
 export const roadmapTable = snakeCase.table("roadmap", {
   roadmapId: uuid().primaryKey(),
   title: varchar({ length: 55 }).notNull(),
   description: text(),
   createdAt: timestamp().defaultNow(),
-  creatorId: varchar().references(() => usersTable.userId)
-})
+  creatorId: uuid().references(() => usersTable.userId),
+});
+
+export const usersSavedRoadmapTable = snakeCase.table("users_saved_roadmap", {
+  userId: uuid().references(() => usersTable.userId),
+  roadmapId: uuid().references(() => roadmapTable.roadmapId),
+},(t) => [primaryKey({ columns: [t.userId, t.roadmapId] })]);
