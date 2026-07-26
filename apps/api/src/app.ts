@@ -1,11 +1,7 @@
-import { Hono } from "hono";
+import { Hono } from 'hono';
+import users from './users/users.routes';
 
-const app = new Hono();
-
-const helloWorld = Bun.env.helloWorld;
-
-app.get("/", (c) => {
-  return c.text(`${helloWorld}`);
-});
+const app = new Hono()
+  .route('/users', users);
 
 export default app;

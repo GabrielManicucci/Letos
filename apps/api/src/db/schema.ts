@@ -6,16 +6,16 @@ export const RolesTable = snakeCase.table("roles", {
 });
 
 export const usersTable = snakeCase.table("users", {
-  userId: uuid().primaryKey(),
+  userId: uuid().primaryKey().defaultRandom(),
   name: varchar({ length: 255 }).notNull(),
   age: integer().notNull(),
-  pro: boolean(),
+  pro: boolean().default(false),
   email: varchar({ length: 255 }).notNull().unique(),
   role: uuid().references(() => RolesTable.roleId),
 });
 
 export const teamTable = snakeCase.table("team", {
-  teamId: uuid().primaryKey(),
+  teamId: uuid().primaryKey().defaultRandom(),
   name: varchar({ length: 55 }).notNull(),
   createdAt: timestamp().defaultNow(),
 });
@@ -28,7 +28,7 @@ export const userTeam = snakeCase.table("user_team", {
 },(t) => [primaryKey({ columns: [t.userId, t.teamId] })]);
 
 export const roadmapTable = snakeCase.table("roadmap", {
-  roadmapId: uuid().primaryKey(),
+  roadmapId: uuid().primaryKey().defaultRandom(),
   title: varchar({ length: 55 }).notNull(),
   description: text(),
   createdAt: timestamp().defaultNow(),
